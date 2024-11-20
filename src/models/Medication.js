@@ -28,7 +28,7 @@ const medicationSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true } // adds createdAt and updatedAt timestamps
-); 
+  { timestamps: true }, // adds createdAt and updatedAt timestamps
+);
 
 module.exports = mongoose.model("Medication", medicationSchema);
