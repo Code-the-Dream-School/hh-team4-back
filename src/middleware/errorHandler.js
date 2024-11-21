@@ -1,15 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
 
 const {
-  BadRequestError,
   NotFoundError,
   UnauthenticatedError,
   ForbiddenError,
   CustomError,
-  CreateError,
 } = require("../errors");
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   //Debugging Console Log
   console.log(err);
 
