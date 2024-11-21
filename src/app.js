@@ -8,7 +8,7 @@ const logger = require('morgan');
 
 const mainRouter = require('./routes/mainRouter.js');
 const testRoutes = require('./routes/testRoutes');
-
+const errorHandler = require('./middleware/errorHandler.js');
 
 // Connect to MongoDB
 connectDB(process.env.MONGO_URI);
@@ -26,5 +26,6 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use('/api/v1', mainRouter);
 app.use('/api/v1/test', testRoutes);
 
+app.use(errorHandler);
  
 module.exports = app;
