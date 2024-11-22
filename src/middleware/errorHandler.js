@@ -7,7 +7,7 @@ const {
   CustomError,
 } = require("../errors");
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, req, res, next) => {
   //Debugging Console Log
   console.log(err);
 
