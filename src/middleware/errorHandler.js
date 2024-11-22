@@ -10,6 +10,7 @@ const {
 const errorHandler = (err, req, res, next) => {
   //Debugging Console Log
   console.log(err);
+  console.log(next);
 
   //Default error response
   let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR; //500
