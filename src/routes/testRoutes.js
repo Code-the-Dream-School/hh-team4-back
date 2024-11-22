@@ -63,7 +63,7 @@ router.get("/test-cast-error", async (req, res, next) => {
 router.get("/test-forbidden-error", (req, res, next) => {
   try {
     console.log("Testing for Forbidden Error");
-    throw new ForbiddenError("Access for this User is den denied");
+    throw new ForbiddenError("Access for this User is denied");
   } catch (error) {
     next(error);
   }
