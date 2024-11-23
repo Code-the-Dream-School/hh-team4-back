@@ -4,16 +4,16 @@ const medicationSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Please provide Medication Name"],
     },
     batchCode: {
       type: String,
-      required: true,
+      required: [true, "Please provide Batch Code"],
       unique: true,
     },
     expirationDate: {
       type: Date,
-      required: true,
+      required: [true, "Please provide Expiration Date"],
     },
     type: {
       type: String,
@@ -25,7 +25,7 @@ const medicationSchema = new mongoose.Schema(
         "Antidiabetic", // treat diabetes
         "Other",
       ],
-      required: true,
+      required: [true, "Please select type of Medication"],
     },
   },
   { timestamps: true }, // adds createdAt and updatedAt timestamps
