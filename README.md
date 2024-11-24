@@ -49,3 +49,178 @@ To fix it, open the testRoutes.js file and update the batchCode field in the tes
 Save the file and rerun the server. To prevent this error, ensure that batchCode values in the test data are unique each time you test the application.
 
 
+---
+
+# **Testing the User Model**
+
+This document provides instructions for testing the **User model**, including creating users, retrieving user details, validating passwords, resetting passwords, and deleting users. The routes provided are part of the testRoutes router. 
+
+---
+
+## **Available Test Routes**
+
+### **1. Create a New User**
+
+- **Endpoint**: `POST /api/v1/test/test-create-user`
+- **Description**: Creates a new user in the database.
+- **Request Body Example(JSON)**:
+  ```json
+  {
+    "firstName": "John",
+    "email": "john.doe@example.com",
+    "password": "StrongPassword123",
+    "role": "admin",
+    "store": "Main Clinic"
+  }
+  ```
+- **Expected Response Example**:
+  ```json
+  {
+    "success": true,
+    "message": "User created successfully",
+    "data": {
+      "firstName": "John",
+      "email": "john.doe@example.com",
+      "role": "admin",
+      "store": "Main Clinic",
+      "_id": "6742891fea2350eb11162634",
+      "createdAt": "2024-11-24T02:02:07.237Z",
+      "updatedAt": "2024-11-24T02:02:07.237Z",
+      "__v": 0
+    }
+  }
+  ```
+
+---
+
+### **2. Fetch a User by Email**
+
+- **Endpoint**: `GET /api/v1/test/test-get-user`
+- **Description**: Retrieves a user by their email address.
+- **Query Parameter**:
+  ```
+  email=john.doe@example.com
+  ```
+- **Request Example**:
+  ```
+  GET http://localhost:8000/api/v1/test/test-get-user?email=john.doe@example.com
+  ```
+- **Expected Response Example (if user exists)**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "firstName": "John",
+      "email": "john.doe@example.com",
+      "role": "admin",
+      "store": "Main Clinic",
+      "createdAt": "2024-11-24T02:02:07.237Z",
+      "updatedAt": "2024-11-24T02:02:07.237Z",
+      "_id": "6742891fea2350eb11162634"
+    }
+  }
+  ```
+
+---
+
+### **3. Validate User Password**
+
+- **Endpoint**: `POST /api/v1/test/test-validate-password`
+- **Description**: Validates a user's password against the hashed password stored in the database.
+- **Request Body (JSON)**:
+  ```json
+  {
+    "email": "john.doe@example.com",
+    "password": "StrongPassword123"
+  }
+  ```
+- **Expected Response (if password is correct)**:
+  ```json
+  {
+    "success": true,
+    "message": "Password is valid"
+  }
+  ```
+
+---
+
+### **4. Reset User Password**
+
+- **Endpoint**: `POST /api/v1/test/test-reset-password`
+- **Description**: Resets a user's password if they provide their current password and a new password.
+- **Request Body (JSON)**:
+  ```json
+  {
+    "email": "john.doe@example.com",
+    "currentPassword": "StrongPassword123",
+    "newPassword": "NewSecurePassword456"
+  }
+  ```
+- **Expected Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Password updated successfully"
+  }
+  ```
+- **Error Responses**:
+  - **Incorrect Password**:
+    ```json
+    {
+      "success": false,
+      "message": "Current password is incorrect"
+    }
+    ```
+  - **User Not Found**:
+    ```json
+    {
+      "success": false,
+      "message": "User not found"
+    }
+    ```
+
+---
+
+### **5. Delete a User**
+
+- **Endpoint**: `DELETE /api/v1/test/test-delete-user/:id`
+- **Description**: Deletes a user by their ID.
+- **Request Example**:
+  ```
+  DELETE http://localhost:8000/api/v1/test/test-delete-user/6742891fea2350eb11162634
+  ```
+- **Expected Response (if user exists)**:
+  ```json
+  {
+    "success": true,
+    "message": "User deleted successfully"
+  }
+  ```
+- **Error Response (if user does not exist)**:
+  ```json
+  {
+    "success": false,
+    "message": "User not found"
+  }
+  ```
+
+---
+
+## **How to Test Using Postman**
+
+1. **Install Postman**:
+   - Download and install [Postman](https://www.postman.com/downloads/) if not already installed.
+
+2. **Create New Requests**:
+   - For each route, create a new request in Postman.
+   - Configure the method (`POST`, `GET`, or `DELETE`) and URL.
+   - Add headers (`Content-Type: application/json` for requests with a body).
+
+3. **Enter Request Bodies**:
+   - For routes requiring a request body (e.g., `test-create-user`, `test-reset-password`), provide the JSON data in the **Body** tab.
+
+4. **Send Requests**:
+   - Ensure your backend server is running locally on `http://localhost:8000`.
+   - Send the requests and verify the responses.
+
+
