@@ -66,7 +66,7 @@ This document provides instructions for testing the **User model**, including cr
 - **Request Body Example(JSON)**:
   ```json
   {
-    "firstName": "John",
+    "name": "John",
     "email": "john.doe@example.com",
     "password": "StrongPassword123",
     "role": "admin",
@@ -79,7 +79,7 @@ This document provides instructions for testing the **User model**, including cr
     "success": true,
     "message": "User created successfully",
     "data": {
-      "firstName": "John",
+      "name": "John",
       "email": "john.doe@example.com",
       "role": "admin",
       "store": "Main Clinic",
@@ -110,7 +110,7 @@ This document provides instructions for testing the **User model**, including cr
   {
     "success": true,
     "data": {
-      "firstName": "John",
+      "name": "John",
       "email": "john.doe@example.com",
       "role": "admin",
       "store": "Main Clinic",
@@ -224,3 +224,199 @@ This document provides instructions for testing the **User model**, including cr
    - Send the requests and verify the responses.
 
 
+### Auth Routes and Role-Based Access
+
+## **New Routes**
+
+### **Signup**
+- **Endpoint**: `POST /auth/signup`
+- **Description**: Registers a new user. The default role is `clerk`.
+- **Required Fields**:
+  - `name` (String, required)
+  - `email` (String, required, unique)
+  - `password` (String, required, minimum 6 characters)
+  - `store` (String, required)
+  - `role` (Optional, defaults to `clerk`; can be `admin`, `inventoryManager`, or `clerk`)
+
+#### **Example Request Body**:
+```json
+{
+  "name": "John",
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123",
+  "store": "Main Clinic"
+}
+```
+
+#### **Expected Response**:
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "id": "64f8d3...",
+    "email": "john.doe@example.com",
+    "role": "clerk"
+  }
+}
+```
+
+---
+
+### **Login**
+- **Endpoint**: `POST /auth/login`
+- **Description**: Logs in a user and returns a JWT token.
+- **Required Fields**:
+  - `email` (String, required)
+  - `password` (String, required)
+
+#### **Example Request Body**:
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123"
+}
+```
+
+#### **Expected Response**:
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "64f8d3...",
+    "email": "john.doe@example.com",
+    "role": "clerk"
+  }
+}
+```
+
+---
+
+### **Protected Routes**
+
+#### **Admin Dashboard**
+- **Endpoint**: `GET /auth/admin-dashboard`
+- **Description**: Accessible only to `admin` users.
+
+#### **Clerk Dashboard**
+- **Endpoint**: `GET /auth/clerk-dashboard`
+- **Description**: Accessible to `admin`, `inventoryManager`, and `clerk` users.
+
+#### **Inventory Manager Dashboard**
+- **Endpoint**: `GET /auth/inventory-manager`
+- **Description**: Accessible to `admin` and `inventoryManager` users.
+
+---
+
+## **How to Test the Routes on Postman**
+
+### **Step 1: Start the Backend Server**
+Ensure the backend server is running:
+```bash
+npm run dev
+```
+The server should be accessible at `http://localhost:8000`.
+
+---
+
+### **Step 2: Signup a New User**
+1. Open Postman and set the method to `POST`.
+2. Use the endpoint:
+   ```
+   http://localhost:8000/api/v1/auth/signup
+   ```
+3. Go to the **Body** tab and select **raw** and **JSON**.
+4. Enter the following:
+   ```json
+   {
+     "name": "Jane",
+     "email": "jane.doe@example.com",
+     "password": "SecurePassword123",
+     "store": "Clinic B"
+   }
+   ```
+5. Click **Send**.
+6. Confirm the user is created successfully.
+
+---
+
+### **Step 3: Login to Get a Token**
+1. Use the endpoint:
+   ```
+   http://localhost:8000/api/v1/auth/login
+   ```
+2. Go to the **Body** tab and select **raw** and **JSON**.
+3. Enter the following:
+   ```json
+   {
+     "email": "jane.doe@example.com",
+     "password": "SecurePassword123"
+   }
+   ```
+4. Click **Send**.
+5. Copy the `token` from the response.
+
+---
+
+### **Step 4: Test Protected Routes**
+#### **Admin Dashboard**
+1. Use the endpoint:
+   ```
+   http://localhost:8000/api/v1/auth/admin-dashboard
+   ```
+2. Set the method to `GET`.
+3. Go to the **Headers** tab.
+4. Add the following header:
+   ```
+   Key: Authorization
+   Value: Bearer <your_token>
+   ```
+5. Click **Send**.
+
+#### **Clerk Dashboard**
+1. Use the endpoint:
+   ```
+   http://localhost:8000/api/v1/auth/clerk-dashboard
+   ```
+2. Follow the same steps as above for adding the `Authorization` header.
+3. Confirm the response.
+
+#### **Inventory Manager Dashboard**
+1. Use the endpoint:
+   ```
+   http://localhost:8000/api/v1/auth/inventory-manager
+   ```
+2. Follow the same steps as above for adding the `Authorization` header.
+3. Confirm the response.
+
+---
+
+### **Expected Responses for Protected Routes**
+- **Admin Dashboard**:
+   ```json
+   {
+     "message": "Welcome, Admin!"
+   }
+   ```
+- **Clerk Dashboard**:
+   ```json
+   {
+     "message": "Welcome, Clerk!"
+   }
+   ```
+- **Inventory Manager Dashboard**:
+   ```json
+   {
+     "message": "Welcome, Inventory Manager!"
+   }
+   ```
+
+- **Unauthorized Access (Role Mismatch)**:
+   ```json
+   {
+     "success": false,
+     "message": "Access denied. You do not have the required permissions."
+   }
+   ```
