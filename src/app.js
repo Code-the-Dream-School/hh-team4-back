@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("../config/db");
+const medicationRoutes = require("./routes/medicationRoutes.js");
 require("dotenv").config();
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(favicon(__dirname + "/public/favicon.ico"));
 // routes
 app.use("/api/v1", mainRouter);
 app.use("/api/v1/test", testRoutes);
+app.use("/api/v1/inventory", medicationRoutes);
 
 app.use(errorHandler);
 
