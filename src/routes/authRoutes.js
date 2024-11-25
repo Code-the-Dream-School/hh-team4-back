@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-// Signup Route
+// Signup Routes
 router.post("/signup", async (req, res) => {
   try {
     const user = await User.create(req.body);
