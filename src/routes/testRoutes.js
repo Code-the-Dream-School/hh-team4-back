@@ -4,6 +4,7 @@ const User = require("../models/UserModel");
 const router = express.Router();
 const ForbiddenError = require("../errors/forbidden");
 const UnauthenticatedError = require("../errors/unauthenticated");
+
 // Test MongoDB Connection
 router.get("/test-db", async (req, res) => {
   try {
@@ -30,7 +31,6 @@ router.get("/test-db", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 // -----------------------------TESTING USER MODEL BEGINS-----------------------------------
 
@@ -64,8 +64,11 @@ router.get("/test-get-user", async (req, res, next) => {
       data: user,
     });
   } catch (error) {
+    next(error);
+  }
+});
 
-//Trigger Validation Error Missing fields test
+// Trigger Validation Error Missing fields test
 router.get("/test-validation-error", async (req, res, next) => {
   try {
     console.log("Testing for validation error");
@@ -79,11 +82,9 @@ router.get("/test-validation-error", async (req, res, next) => {
     await invalidMedication.save(); // This will trigger a validation error
   } catch (error) {
     console.log("Validation error caught");
-
     next(error);
   }
 });
-
 
 // Test: Validate password
 router.post("/test-validate-password", async (req, res, next) => {
@@ -105,19 +106,21 @@ router.post("/test-validate-password", async (req, res, next) => {
     }
 
     res.status(200).json({ success: true, message: "Password is valid" });
-
-//Trigger a cast error invalid id
-router.get("/test-cast-error", async (req, res, next) => {
-  try {
-    console.log("Testing for Cast Error");
-    const medication = await Medication.findById("invalid_id");
-    res.status(200).json(medication);
-
   } catch (error) {
     next(error);
   }
 });
 
+// Trigger a cast error invalid id
+router.get("/test-cast-error", async (req, res, next) => {
+  try {
+    console.log("Testing for Cast Error");
+    const medication = await Medication.findById("invalid_id");
+    res.status(200).json(medication);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Test: Update user
 router.put("/test-update-user/:id", async (req, res, next) => {
@@ -130,8 +133,12 @@ router.put("/test-update-user/:id", async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+});
 
-//Trigger forbidden error
+// Trigger forbidden error
 router.get("/test-forbidden-error", (req, res, next) => {
   try {
     console.log("Testing for Forbidden Error");
@@ -140,7 +147,6 @@ router.get("/test-forbidden-error", (req, res, next) => {
     next(error);
   }
 });
-
 
 // Test: Delete user
 router.delete("/test-delete-user/:id", async (req, res, next) => {
@@ -152,18 +158,20 @@ router.delete("/test-delete-user/:id", async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, message: "User deleted successfully" });
-
-//Trigger Unauthenticated error
-router.get("/test-unauthenticated-error", (req, res, next) => {
-  try {
-    console.log("Testing for unAuthenticated Error");
-    throw new UnauthenticatedError("You are not authenticated.");
-
   } catch (error) {
     next(error);
   }
 });
 
+// Trigger Unauthenticated error
+router.get("/test-unauthenticated-error", (req, res, next) => {
+  try {
+    console.log("Testing for unAuthenticated Error");
+    throw new UnauthenticatedError("You are not authenticated.");
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Test: Reset password
 router.post("/test-reset-password", async (req, res, next) => {
@@ -176,7 +184,9 @@ router.post("/test-reset-password", async (req, res, next) => {
 
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
-      return res.status(401).json({ message: "Current password is incorrect" });
+      return res
+        .status(401)
+        .json({ message: "Current password is incorrect" });
     }
 
     user.password = newPassword;
