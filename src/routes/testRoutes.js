@@ -65,7 +65,7 @@ router.get("/test-get-users", async (req, res, next) => {
 router.get("/test-get-user", async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.query.email }).select(
-      "+password"
+      "+password",
     );
     if (!user) {
       return res
