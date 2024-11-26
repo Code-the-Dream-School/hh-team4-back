@@ -14,7 +14,7 @@ router.get(
   roleMiddleware(["admin"]),
   (req, res) => {
     res.status(200).json({ message: "Welcome, Admin!" });
-  }
+  },
 );
 
 router.get(
@@ -23,7 +23,7 @@ router.get(
   roleMiddleware(["admin", "inventoryManager"]), // Admins and inventory managers can access
   (req, res) => {
     res.status(200).json({ message: "Welcome, Inventory Manager!" });
-  }
+  },
 );
 
 router.get(
@@ -32,7 +32,7 @@ router.get(
   roleMiddleware(["admin", "inventoryManager", "clerk"]), // Allow clerk access
   (req, res) => {
     res.status(200).json({ message: "Welcome, Clerk!" });
-  }
+  },
 );
 
 module.exports = router;

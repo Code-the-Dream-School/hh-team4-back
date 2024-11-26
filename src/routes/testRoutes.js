@@ -52,7 +52,7 @@ router.post("/test-create-user", async (req, res, next) => {
 router.get("/test-get-user", async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.query.email }).select(
-      "+password"
+      "+password",
     );
     if (!user) {
       return res
@@ -184,9 +184,7 @@ router.post("/test-reset-password", async (req, res, next) => {
 
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
-      return res
-        .status(401)
-        .json({ message: "Current password is incorrect" });
+      return res.status(401).json({ message: "Current password is incorrect" });
     }
 
     user.password = newPassword;

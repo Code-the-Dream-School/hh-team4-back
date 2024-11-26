@@ -19,7 +19,7 @@ const authenticate = (req, res, next) => {
 
     // Attach the user data (from token) to the request object
     req.user = decoded;
-    next(); 
+    next();
   } catch (err) {
     return res.status(400).json({
       success: false,

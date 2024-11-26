@@ -1,4 +1,3 @@
-
 const mainController = {};
 
 mainController.get = (req, res) => {
