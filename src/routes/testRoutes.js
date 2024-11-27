@@ -48,6 +48,19 @@ router.post("/test-create-user", async (req, res, next) => {
   }
 });
 
+// Test: Get all users
+router.get("/test-get-users", async (req, res, next) => {
+  try {
+    const users = await User.find(); // Fetch all users from the database
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    next(error); // Pass any errors to the error handling middleware
+  }
+});
+
 // Test: GET a user by email
 router.get("/test-get-user", async (req, res, next) => {
   try {
