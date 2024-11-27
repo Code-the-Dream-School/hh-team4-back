@@ -69,4 +69,60 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+// Controller to validate a password
+const validatePassword = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Compare password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid password" });
+    }
+
+    res.status(200).json({ success: true, message: "Password is valid" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Controller to reset a password
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Verify current password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { signup, login, validatePassword, resetPassword };
