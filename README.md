@@ -420,3 +420,113 @@ The server should be accessible at `http://localhost:8000`.
      "message": "Access denied. You do not have the required permissions."
    }
    ```
+
+
+
+
+
+
+## Database Seeding Instructions
+
+This section explains how to seed the database with sample data for testing purposes. The script will populate the database with predefined medications and users.
+
+
+### **How to Seed the Database**
+
+1. **Install Dependencies**  
+   Ensure all necessary dependencies are installed:
+   ```bash
+   npm install
+   ```
+
+2. **Run the Backend**  
+   Start the backend to verify the database connection:
+   ```bash
+   npm run dev
+   ```
+
+3. **Seed the Database**  
+   In a new terminal window, run the seeding script:
+   ```bash
+   npm run seed
+   ```
+
+4. **Check the Output**  
+   You should see messages in the terminal like:
+   - "MongoDB connected..."
+   - "Existing data cleared!"
+   - "Users seeded!"
+   - "Medications seeded!"
+   - "Database seeding completed and connection closed!"
+
+5. **Verify the Data**  
+   - Test the `GET` endpoints in Postman to confirm the seeded data is accessible. 
+   - To GET all users, use: /api/v1/test/test-get-users
+   - To GET all meds, use: /api/v1/inventory
+
+---
+
+### **Seeded Data**
+
+#### **Medications**
+- **Example Data**:
+  ```json
+  [
+    {
+      "name": "Ibuprofen",
+      "batchCode": "AX12345",
+      "expirationDate": "2024-12-31T00:00:00.000Z",
+      "type": "Antiinflammatory"
+    },
+    {
+      "name": "Amoxicillin",
+      "batchCode": "BX67890",
+      "expirationDate": "2025-06-30T00:00:00.000Z",
+      "type": "Antibiotic"
+    },
+    {
+      "name": "Acetaminophen",
+      "batchCode": "CX13579",
+      "expirationDate": "2024-03-15T00:00:00.000Z",
+      "type": "Analgesic"
+    }
+  ]
+  ```
+
+#### **Users**
+- **Example Data**:
+  ```json
+  [
+    {
+      "name": "Admin",
+      "email": "admin@example.com",
+      "password": "$2b$10$eW5DjhOtaPwM/KxU0N2eZOU41jnpJqlI/lPpuFTB/X/Y1ZgxhsdpG", 
+      "role": "admin",
+      "store": "Main Clinic",
+      "createdAt": "2024-11-24T02:02:07.237Z",
+      "updatedAt": "2024-11-24T02:02:07.237Z"
+    },
+    {
+      "name": "Manager",
+      "email": "manager@example.com",
+      "password": "$2b$10$eW5DjhOtaPwM/KxU0N2eZOU41jnpJqlI/lPpuFTB/X/Y1ZgxhsdpG",
+      "role": "inventoryManager",
+      "store": "Main Clinic", 
+      "createdAt": "2024-11-24T02:02:07.237Z",
+      "updatedAt": "2024-11-24T02:02:07.237Z"
+    },
+    {
+      "name": "Clerk",
+      "email": "clerk@example.com",
+      "password": "$2b$10$eW5DjhOtaPwM/KxU0N2eZOU41jnpJqlI/lPpuFTB/X/Y1ZgxhsdpG",
+      "role": "clerk",
+      "store": "Main Clinic", 
+      "createdAt": "2024-11-24T02:02:07.237Z",
+      "updatedAt": "2024-11-24T02:02:07.237Z"
+    }
+  ]
+  ```
+
+---
+
+Database seeding instructions end
