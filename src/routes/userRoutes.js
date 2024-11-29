@@ -1,4 +1,6 @@
 const express = require("express");
+const authenticate = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 const {
   createUser,
   updateUser,
@@ -9,15 +11,15 @@ const {
 const router = express.Router();
 
 // Create a new user
-router.post("/", createUser);
+router.post("/", authenticate, roleMiddleware(["admin"]), createUser);
 
 // Get all users
-router.get("/", getAllUsers);
+router.get("/", authenticate, roleMiddleware(["admin"]), getAllUsers);
 
 // Update a user by ID
-router.put("/:id", updateUser);
+router.put("/:id", authenticate, roleMiddleware(["admin"]), updateUser);
 
 // Delete a user by ID
-router.delete("/:id", deleteUser);
+router.delete("/:id", authenticate, roleMiddleware(["admin"]), deleteUser);
 
 module.exports = router;
