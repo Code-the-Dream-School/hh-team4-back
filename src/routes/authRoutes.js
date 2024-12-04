@@ -1,5 +1,10 @@
 const express = require("express");
-const { signup, login } = require("../controllers/authController");
+const {
+  signup,
+  login,
+  validatePassword,
+  resetPassword,
+} = require("../controllers/authController");
 const authenticate = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
@@ -7,6 +12,8 @@ const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/validate-password", validatePassword); // Route for validating a password
+router.post("/reset-password", resetPassword); // Route for resetting a password
 
 router.get(
   "/admin-dashboard",
