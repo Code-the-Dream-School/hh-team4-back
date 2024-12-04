@@ -14,6 +14,22 @@ const createUser = async (req, res, next) => {
   }
 };
 
+// Controller to get single user
+const getAUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Controller to get all users
 const getAllUsers = async (req, res, next) => {
   try {
@@ -61,6 +77,7 @@ const deleteUser = async (req, res, next) => {
 
 module.exports = {
   createUser,
+  getAUser,
   getAllUsers,
   updateUser,
   deleteUser,

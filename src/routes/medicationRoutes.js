@@ -1,4 +1,6 @@
 const express = require("express");
+const authenticate = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 const {
   getMedications,
@@ -11,18 +13,43 @@ const {
 const router = express.Router();
 
 // GET /inventory: Get all medications
-router.get("/", getMedications);
+router.get(
+  "/",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  getMedications,
+);
 
 // GET /inventory:id Get single medication
-router.get("/:id", getMedication);
+router.get(
+  "/:id",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  getMedication,
+);
 
 // POST /inventory: add a new medication
-router.post("/", createMedication);
+router.post(
+  "/",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  createMedication,
+);
 
 // PUT /inventory:id Update item by id
-router.patch("/:id", updateMedication);
+router.patch(
+  "/:id",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  updateMedication,
+);
 
 //DELETE /inventory:id Delete item by id
-router.delete("/:id", deleteMedication);
+router.delete(
+  "/:id",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  deleteMedication,
+);
 
 module.exports = router;
