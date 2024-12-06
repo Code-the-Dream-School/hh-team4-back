@@ -1,4 +1,5 @@
 const Medication = require("../models/Medication");
+const User = require("../models/UserModel");
 const { StatusCodes } = require("http-status-codes");
 const { NotFoundError } = require("../errors");
 
@@ -22,9 +23,34 @@ const getMedication = async (req, res) => {
 
 // Create a medication
 const createMedication = async (req, res) => {
-  const medication = await Medication.create(req.body);
-  res.status(StatusCodes.CREATED).json({ success: true, data: medication });
-  console.log("Create Medication");
+  try {
+    const userId = req.user.id; // Get the user ID from the request
+
+    // Fetch the user's name using the userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Assign the user's name to createdBy instead of the user ID
+    const medicationData = {
+      ...req.body,
+      createdBy: user.name, // Assign the user's name
+    };
+
+    // Create a new medication record with the user's name
+    const medication = await Medication.create(medicationData);
+
+    res.status(StatusCodes.CREATED).json({ success: true, data: medication });
+    console.log("Create Medication");
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, error: error.message });
+    console.error("Error creating medication:", error);
+  }
 };
 
 // Update an existing medication
