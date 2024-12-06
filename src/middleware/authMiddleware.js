@@ -18,10 +18,10 @@ const authenticate = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach the user data (from token) to the request object
-    req.user = decoded;
+    req.user = { id: decoded.id, role: decoded.role };
     next();
   } catch (err) {
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
       message: "Invalid token.",
     });

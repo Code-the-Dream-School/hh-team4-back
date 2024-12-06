@@ -1,5 +1,5 @@
 const express = require("express");
-
+const authenticate = require("../middleware/authMiddleware");
 const {
   getMedications,
   getMedication,
@@ -17,7 +17,7 @@ router.get("/", getMedications);
 router.get("/:id", getMedication);
 
 // POST /inventory: add a new medication
-router.post("/", createMedication);
+router.post("/", authenticate, createMedication);
 
 // PUT /inventory:id Update item by id
 router.patch("/:id", updateMedication);

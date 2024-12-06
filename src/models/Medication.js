@@ -6,16 +6,20 @@ const medicationSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide Medication Name"],
     },
-    batchCode: {
+    genericName: {
       type: String,
-      required: [true, "Please provide Batch Code"],
+      required: [true, "Please provide Generic Medication Name"],
+    },
+    lot: {
+      type: String,
+      required: [true, "Please provide Lot Code"],
       unique: true,
     },
     expirationDate: {
       type: Date,
       required: [true, "Please provide Expiration Date"],
     },
-    type: {
+    class: {
       type: String,
       enum: [
         "Analgesic", // pain relievers
@@ -26,6 +30,30 @@ const medicationSchema = new mongoose.Schema(
         "Other",
       ],
       required: [true, "Please select type of Medication"],
+    },
+    store: {
+      type: String,
+      required: [true, "Please provide Store Name"],
+    },
+    ndcNumber: {
+      type: String,
+      required: [true, "Please provide NDC Number"],
+      unique: true,
+    },
+    createdBy: {
+      type: String,
+      ref: "User",
+      required: [true, "Please provide the creator's user ID"],
+    },
+    threshold: {
+      type: Number,
+      required: [true, "Please provide Threshold quantity"],
+      min: [0, "Threshold must be a non-negative number"],
+    },
+    quantity: {
+      type: Number,
+      required: [true, "Please provide Quantity"],
+      min: [0, "Quantity must be a non-negative number"],
     },
   },
   { timestamps: true }, // adds createdAt and updatedAt timestamps
