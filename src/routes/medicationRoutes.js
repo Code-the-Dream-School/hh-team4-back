@@ -1,9 +1,7 @@
 const express = require("express");
 const authenticate = require("../middleware/authMiddleware");
 
-
 const roleMiddleware = require("../middleware/roleMiddleware");
-
 
 const {
   getMedications,
