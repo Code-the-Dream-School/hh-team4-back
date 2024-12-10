@@ -1,5 +1,6 @@
 const express = require("express");
 const authenticate = require("../middleware/authMiddleware");
+
 const roleMiddleware = require("../middleware/roleMiddleware");
 
 const {
@@ -29,6 +30,9 @@ router.get(
 );
 
 // POST /inventory: add a new medication
+
+router.post("/", authenticate, createMedication);
+
 router.post(
   "/",
   authenticate,
