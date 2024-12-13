@@ -33,6 +33,7 @@ const medicationSchema = new mongoose.Schema(
     },
     store: {
       type: String,
+      ref: "User",
       required: [true, "Please provide Store Name"],
     },
     ndcNumber: {

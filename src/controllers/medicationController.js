@@ -38,6 +38,7 @@ const createMedication = async (req, res) => {
     const medicationData = {
       ...req.body,
       createdBy: user.name, // Assign the user's name
+      store: user.store, // Assign the user's store
     };
 
     // Create a new medication record with the user's name
