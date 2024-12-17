@@ -31,8 +31,6 @@ router.get(
 
 // POST /inventory: add a new medication
 
-router.post("/", authenticate, createMedication);
-
 router.post(
   "/",
   authenticate,
