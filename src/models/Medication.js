@@ -22,11 +22,11 @@ const medicationSchema = new mongoose.Schema(
     class: {
       type: String,
       enum: [
-        "Analgesic", // pain relievers
-        "Antiinflammatory", // reduce inflammation
-        "Antibiotic", // treat bacterial infections
-        "Antihypertensive", // treat high blood pressure
-        "Antidiabetic", // treat diabetes
+        "Antibiotic",
+        "Analgesic",
+        "Antidepressant",
+        "Antiviral",
+        "Antifungal",
         "Other",
       ],
       required: [true, "Please select type of Medication"],
