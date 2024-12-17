@@ -32,8 +32,8 @@ const userSchema = new mongoose.Schema(
     },
     store: {
       type: String,
+      enum: ["Store 1", "Store 2"],
       required: [true, "Store is required"],
-      trim: true,
     },
   },
   {
