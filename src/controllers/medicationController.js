@@ -119,6 +119,19 @@ const dispenseMedication = async (req, res) => {
   }
 };
 
+// Dispense Log Retrieval
+const getDispenseLogs = async (req, res) => {
+  try {
+    // Optionally, you can filter by userId or other criteria (e.g., date range)
+    const logs = await DispenseLog.find();
+    res.status(200).json(logs);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching dispense logs", error: err });
+  }
+};
+
 // Update an existing medication
 const updateMedication = async (req, res) => {
   const { id } = req.params;
@@ -153,4 +166,5 @@ module.exports = {
   updateMedication,
   deleteMedication,
   dispenseMedication,
+  getDispenseLogs,
 };

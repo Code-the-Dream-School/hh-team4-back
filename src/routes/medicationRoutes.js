@@ -9,6 +9,7 @@ const {
   updateMedication,
   deleteMedication,
   dispenseMedication,
+  getDispenseLogs,
 } = require("../controllers/medicationController");
 
 const router = express.Router();
@@ -60,6 +61,14 @@ router.post(
   authenticate,
   roleMiddleware(["admin", "clerk", "inventoryManager"]),
   dispenseMedication,
+);
+
+// Dispense Log Stats
+router.get(
+  "/dispense-logs",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  getDispenseLogs,
 );
 
 module.exports = router;
