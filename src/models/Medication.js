@@ -31,15 +31,19 @@ const medicationSchema = new mongoose.Schema(
       ],
       required: [true, "Please select type of Medication"],
     },
+    ndcNumber: {
+      type: String,
+      required: [true, "Please provide NDC Number"],
+      unique: true,
+    },
     store: {
       type: String,
       ref: "User",
       required: [true, "Please provide Store Name"],
     },
-    ndcNumber: {
+    loggedBy: {
       type: String,
-      required: [true, "Please provide NDC Number"],
-      unique: true,
+      ref: "User",
     },
     createdBy: {
       type: String,
