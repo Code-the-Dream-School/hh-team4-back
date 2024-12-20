@@ -1,5 +1,6 @@
 const Medication = require("../models/Medication");
 const User = require("../models/UserModel");
+const DispenseLog = require("../models/DispenseLog");
 const { StatusCodes } = require("http-status-codes");
 const { NotFoundError } = require("../errors");
 
@@ -54,6 +55,70 @@ const createMedication = async (req, res) => {
   }
 };
 
+// Dispense Medication
+const dispenseMedication = async (req, res) => {
+  try {
+    const { medicationId, quantity, dispenseDate, lotNumber, ndc } = req.body;
+
+    console.log("Dispensing medication with ID:", medicationId); // Debug log
+
+    //Find Medication
+    const medication = await Medication.findById(medicationId);
+    if (!medication) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ success: false, message: "Medication not Found" });
+    }
+
+    //Debugging
+    console.log("User object check:", req.user);
+    console.log("Medication store:", medication.store); // Check value
+    console.log("User store:", req.user.store); // Check value
+
+    // Ensure User Store matches Medication Store
+    // if (medication.store !== req.user.store) {
+    //   return res.status(StatusCodes.FORBIDDEN).json({
+    //     success: false,
+    //     message:
+    //       "You are not authorized to dispense medication from this store.",
+    //   });
+    // }
+
+    // Ensure we have enough in stock
+    if (medication.quantity < quantity) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "Insufficient stock available",
+      });
+    }
+
+    // Deduct quantity and save
+    medication.quantity -= quantity;
+    await medication.save();
+
+    // Log Dispense Action
+    await DispenseLog.create({
+      medicationId,
+      userId: req.user.id,
+      store: req.user.store,
+      quantity,
+      dispenseDate: dispenseDate || new Date(),
+      lotNumber,
+      ndc,
+    });
+
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, message: "Medication dispensed successfully" });
+    console.log("Medication Dispensed");
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, error: error.message });
+    console.error("Error dispensing medication:", error);
+  }
+};
+
 // Update an existing medication
 const updateMedication = async (req, res) => {
   const { id } = req.params;
@@ -87,4 +152,5 @@ module.exports = {
   createMedication,
   updateMedication,
   deleteMedication,
+  dispenseMedication,
 };

@@ -1,6 +1,5 @@
 const express = require("express");
 const authenticate = require("../middleware/authMiddleware");
-
 const roleMiddleware = require("../middleware/roleMiddleware");
 
 const {
@@ -9,6 +8,7 @@ const {
   createMedication,
   updateMedication,
   deleteMedication,
+  dispenseMedication,
 } = require("../controllers/medicationController");
 
 const router = express.Router();
@@ -52,6 +52,14 @@ router.delete(
   authenticate,
   roleMiddleware(["admin", "clerk", "inventoryManager"]),
   deleteMedication,
+);
+
+// POST /inventory/dispense Dispense medication
+router.post(
+  "/dispense",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  dispenseMedication,
 );
 
 module.exports = router;
