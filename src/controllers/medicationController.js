@@ -71,19 +71,14 @@ const dispenseMedication = async (req, res) => {
         .json({ success: false, message: "Medication not Found" });
     }
 
-    //Debugging
-    console.log("User object check:", req.user);
-    console.log("Medication store:", medication.store); // Check value
-    console.log("User store:", req.user.store); // Check value
-
     // Ensure User Store matches Medication Store
-    // if (medication.store !== req.user.store) {
-    //   return res.status(StatusCodes.FORBIDDEN).json({
-    //     success: false,
-    //     message:
-    //       "You are not authorized to dispense medication from this store.",
-    //   });
-    // }
+    if (medication.store !== req.user.store) {
+      return res.status(StatusCodes.FORBIDDEN).json({
+        success: false,
+        message:
+          "You are not authorized to dispense medication from this store.",
+      });
+    }
 
     // Ensure we have enough in stock
     if (medication.quantity < quantity) {

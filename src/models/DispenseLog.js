@@ -12,11 +12,11 @@ const dispenseLogSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    // store: {
-    //   type: String,
-    //   enum: ["Store 1", "Store 2"],
-    //   required: true,
-    // },
+    store: {
+      type: String,
+      enum: ["Store 1", "Store 2"],
+      required: true,
+    },
     quantity: {
       type: Number,
       required: true,
