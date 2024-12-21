@@ -35,10 +35,11 @@ const createMedication = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Assign the user's name to createdBy instead of the user ID
+    // Assign the user's Name, Id, and Store to the created med
     const medicationData = {
       ...req.body,
-      createdBy: user.name, // Assign the user's name
+      loggedBy: user.name, //Assign the user's name
+      createdBy: user.id, // Assign the user's Id
       store: user.store, // Assign the user's store
     };
 
