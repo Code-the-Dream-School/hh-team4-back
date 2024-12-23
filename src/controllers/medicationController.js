@@ -59,10 +59,10 @@ const createMedication = async (req, res) => {
 // Dispense Medication
 const dispenseMedication = async (req, res) => {
   try {
-    const { medicationId, quantity, dispenseDate, lotNumber, ndc } = req.body;
+    const { medicationId, quantity } = req.body;
 
     console.log("Dispensing medication with ID:", medicationId); // Debug log
-
+    
     //Find Medication
     const medication = await Medication.findById(medicationId);
     if (!medication) {
@@ -93,19 +93,32 @@ const dispenseMedication = async (req, res) => {
     await medication.save();
 
     // Log Dispense Action
-    await DispenseLog.create({
+    const log = await DispenseLog.create({
       medicationId,
       userId: req.user.id,
-      store: req.user.store,
       quantity,
-      dispenseDate: dispenseDate || new Date(),
-      lotNumber,
-      ndc,
+      dispenseDate: new Date(),
     });
 
-    res
-      .status(StatusCodes.OK)
-      .json({ success: true, message: "Medication dispensed successfully" });
+    //Populate medication and user details in the reponse
+
+    const populatedLog = await log.populate([
+      {
+        path: "medicationId",
+        select: "name ndc lot",
+      },
+      {
+        path: "userId",
+        select: "name store",
+      },
+    ]);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Medication dispensed successfully",
+      log: populatedLog,
+    });
+
     console.log("Medication Dispensed");
   } catch (error) {
     res
@@ -117,15 +130,9 @@ const dispenseMedication = async (req, res) => {
 
 // Dispense Log Retrieval
 const getDispenseLogs = async (req, res) => {
-  try {
-    // Optionally, you can filter by userId or other criteria (e.g., date range)
-    const logs = await DispenseLog.find();
-    res.status(200).json(logs);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error fetching dispense logs", error: err });
-  }
+  const logs = await DispenseLog.find();
+  res.status(StatusCodes.OK).json({ success: true, data: logs });
+  console.log("Fetch All Logs");
 };
 
 // Update an existing medication

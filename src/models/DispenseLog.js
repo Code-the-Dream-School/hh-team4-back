@@ -12,23 +12,10 @@ const dispenseLogSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    store: {
-      type: String,
-      enum: ["Store 1", "Store 2"],
-      required: true,
-    },
     quantity: {
       type: Number,
       required: true,
       min: [1, "Dispensed Quantity must be at least 1"],
-    },
-    lotNumber: {
-      type: String,
-      required: true,
-    },
-    ndc: {
-      type: String,
-      required: true,
     },
     dispenseDate: {
       type: Date,
