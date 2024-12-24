@@ -27,7 +27,7 @@ const createMedication = async (req, res) => {
   try {
     const userId = req.user.id; // Get the user ID from the request
 
-    // Fetch the user's name using the userId
+    // Verify user exists
     const user = await User.findById(userId);
     if (!user) {
       return res
@@ -38,9 +38,7 @@ const createMedication = async (req, res) => {
     // Assign the user's Name, Id, and Store to the created med
     const medicationData = {
       ...req.body,
-      loggedBy: user.name, //Assign the user's name
       createdBy: user.id, // Assign the user's Id
-      store: user.store, // Assign the user's store
     };
 
     // Create a new medication record with the user's name
@@ -62,9 +60,13 @@ const dispenseMedication = async (req, res) => {
     const { medicationId, quantity } = req.body;
 
     console.log("Dispensing medication with ID:", medicationId); // Debug log
-    
-    //Find Medication
-    const medication = await Medication.findById(medicationId);
+
+    //Find Medication and populate creators details
+    const medication = await Medication.findById(medicationId).populate({
+      path: "createdBy",
+      select: "store",
+    });
+
     if (!medication) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -72,7 +74,7 @@ const dispenseMedication = async (req, res) => {
     }
 
     // Ensure User Store matches Medication Store
-    if (medication.store !== req.user.store) {
+    if (medication.createdBy.store !== req.user.store) {
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         message:
@@ -100,7 +102,7 @@ const dispenseMedication = async (req, res) => {
       dispenseDate: new Date(),
     });
 
-    //Populate medication and user details in the reponse
+    //Populate medication and user details in the response
 
     const populatedLog = await log.populate([
       {
