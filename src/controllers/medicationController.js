@@ -4,64 +4,52 @@ const DispenseLog = require("../models/DispenseLog");
 const { StatusCodes } = require("http-status-codes");
 const { NotFoundError } = require("../errors");
 
-// Fetch all medications
-const getMedications = async (req, res) => {
-  const medications = await Medication.find();
-  res.status(StatusCodes.OK).json({ success: true, data: medications });
-  console.log("Fetch All Medications");
-};
-
-// Fetch a Single medication
-const getMedication = async (req, res) => {
-  const { id } = req.params;
-  const medication = await Medication.findById(id);
-  if (!medication) {
-    throw new NotFoundError(`No medication found with id: ${id}`);
-  }
-  res.status(StatusCodes.OK).json({ success: true, data: medication });
-  console.log("Fetch Single Medication");
-};
-
-// Create a medication
-const createMedication = async (req, res) => {
+const getMedications = async (req, res, next) => {
   try {
-    const userId = req.user.id; // Get the user ID from the request
+    const medications = await Medication.find();
+    res.status(StatusCodes.OK).json({ success: true, data: medications });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    // Verify user exists
+const getMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const medication = await Medication.findById(id);
+    if (!medication) {
+      throw new NotFoundError(`No medication found with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({ success: true, data: medication });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createMedication = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "User not found" });
     }
 
-    // Assign the user's Name, Id, and Store to the created med
     const medicationData = {
       ...req.body,
-      createdBy: user.id, // Assign the user's Id
+      createdBy: user.id,
     };
-
-    // Create a new medication record with the user's name
     const medication = await Medication.create(medicationData);
-
     res.status(StatusCodes.CREATED).json({ success: true, data: medication });
-    console.log("Create Medication");
   } catch (error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, error: error.message });
-    console.error("Error creating medication:", error);
+    next(error);
   }
 };
 
-// Dispense Medication
-const dispenseMedication = async (req, res) => {
+const dispenseMedication = async (req, res, next) => {
   try {
     const { medicationId, quantity } = req.body;
-
-    console.log("Dispensing medication with ID:", medicationId); // Debug log
-
-    //Find Medication and populate creators details
     const medication = await Medication.findById(medicationId).populate({
       path: "createdBy",
       select: "store",
@@ -73,7 +61,6 @@ const dispenseMedication = async (req, res) => {
         .json({ success: false, message: "Medication not Found" });
     }
 
-    // Ensure User Store matches Medication Store
     if (medication.createdBy.store !== req.user.store) {
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
@@ -82,7 +69,6 @@ const dispenseMedication = async (req, res) => {
       });
     }
 
-    // Ensure we have enough in stock
     if (medication.quantity < quantity) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
@@ -90,11 +76,9 @@ const dispenseMedication = async (req, res) => {
       });
     }
 
-    // Deduct quantity and save
     medication.quantity -= quantity;
     await medication.save();
 
-    // Log Dispense Action
     const log = await DispenseLog.create({
       medicationId,
       userId: req.user.id,
@@ -102,17 +86,9 @@ const dispenseMedication = async (req, res) => {
       dispenseDate: new Date(),
     });
 
-    //Populate medication and user details in the response
-
     const populatedLog = await log.populate([
-      {
-        path: "medicationId",
-        select: "name ndc lot",
-      },
-      {
-        path: "userId",
-        select: "name store",
-      },
+      { path: "medicationId", select: "name ndc lot" },
+      { path: "userId", select: "name store" },
     ]);
 
     res.status(StatusCodes.OK).json({
@@ -120,48 +96,50 @@ const dispenseMedication = async (req, res) => {
       message: "Medication dispensed successfully",
       log: populatedLog,
     });
-
-    console.log("Medication Dispensed");
   } catch (error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, error: error.message });
-    console.error("Error dispensing medication:", error);
+    next(error);
   }
 };
 
-// Dispense Log Retrieval
-const getDispenseLogs = async (req, res) => {
-  const logs = await DispenseLog.find();
-  res.status(StatusCodes.OK).json({ success: true, data: logs });
-  console.log("Fetch All Logs");
+const getDispenseLogs = async (req, res, next) => {
+  try {
+    const logs = await DispenseLog.find();
+    res.status(StatusCodes.OK).json({ success: true, data: logs });
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Update an existing medication
-const updateMedication = async (req, res) => {
-  const { id } = req.params;
-  const medication = await Medication.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!medication) {
-    throw new NotFoundError(`No medication found with id: ${id}`);
+const updateMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const medication = await Medication.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!medication) {
+      throw new NotFoundError(`No medication found with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({ success: true, data: medication });
+  } catch (error) {
+    next(error);
   }
-  res.status(StatusCodes.OK).json({ success: true, data: medication });
-  console.log("Changes a medication");
 };
 
-// Delete a medication
-const deleteMedication = async (req, res) => {
-  const { id } = req.params;
-  const medication = await Medication.findByIdAndDelete(id);
-  if (!medication) {
-    throw new NotFoundError(`No medication found with id: ${id}`);
+const deleteMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const medication = await Medication.findByIdAndDelete(id);
+    if (!medication) {
+      throw new NotFoundError(`No medication found with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Medication deleted successfully",
+    });
+  } catch (error) {
+    next(error);
   }
-  res
-    .status(StatusCodes.OK)
-    .json({ success: true, message: "Medication deleted successfully" });
-  console.log("Delete Medication");
 };
 
 module.exports = {
