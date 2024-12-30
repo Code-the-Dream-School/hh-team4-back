@@ -1,4 +1,5 @@
 const User = require("../models/UserModel");
+const bcrypt = require("bcryptjs");
 
 // Create a new user
 const createUser = async (req, res, next) => {
@@ -47,7 +48,15 @@ const getAllUsers = async (req, res, next) => {
 // Update a user by ID
 const updateUser = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const updates = { ...req.body };
+
+    //if password is being updated , hash it
+    if (updates.password) {
+      const salt = await bcrypt.genSalt(10);
+      updates.password = await bcrypt.hash(updates.password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,
     });
