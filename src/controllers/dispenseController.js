@@ -72,10 +72,29 @@ const dispenseMedication = async (req, res) => {
   }
 };
 
-// Dispense Log Retrieval
 const getDispenseLogs = async (req, res) => {
-  const logs = await DispenseLog.find();
-  res.status(StatusCodes.OK).json({ success: true, data: logs });
+  try {
+    // Fetch dispense logs and populate medication and user details
+    const logs = await DispenseLog.find()
+      .populate({
+        path: "medicationId",
+        select: "name ndc lot class", // Add any other fields you need
+      })
+      .populate({
+        path: "userId",
+        select: "name store", // Add any other fields you need
+      });
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      logs,
+    });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Error fetching dispense logs",
+    });
+  }
 };
 
 module.exports = {
