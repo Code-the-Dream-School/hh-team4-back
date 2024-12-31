@@ -4,81 +4,79 @@ const User = require("../models/UserModel");
 const { StatusCodes } = require("http-status-codes");
 const { NotFoundError } = require("../errors");
 
-// Fetch all medications
-const getMedications = async (req, res) => {
-  const medications = await Medication.find();
-  res.status(StatusCodes.OK).json({ success: true, data: medications });
-  console.log("Fetch All Medications");
-};
-
-// Fetch a Single medication
-const getMedication = async (req, res) => {
-  const { id } = req.params;
-  const medication = await Medication.findById(id);
-  if (!medication) {
-    throw new NotFoundError(`No medication found with id: ${id}`);
-  }
-  res.status(StatusCodes.OK).json({ success: true, data: medication });
-  console.log("Fetch Single Medication");
-};
-
-// Create a medication
-const createMedication = async (req, res) => {
+const getMedications = async (req, res, next) => {
   try {
-    const userId = req.user.id; // Get the user ID from the request
+    const medications = await Medication.find();
+    res.status(StatusCodes.OK).json({ success: true, data: medications });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    // Verify user exists
+const getMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const medication = await Medication.findById(id);
+    if (!medication) {
+      throw new NotFoundError(`No medication found with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({ success: true, data: medication });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createMedication = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "User not found" });
     }
 
-    // Assign the user's Name, Id, and Store to the created med
     const medicationData = {
       ...req.body,
-      createdBy: user.id, // Assign the user's Id
+      createdBy: user.id,
     };
-
-    // Create a new medication record with the user's name
     const medication = await Medication.create(medicationData);
-
     res.status(StatusCodes.CREATED).json({ success: true, data: medication });
-    console.log("Create Medication");
   } catch (error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, error: error.message });
-    console.error("Error creating medication:", error);
+    next(error);
   }
 };
 
-// Update an existing medication
-const updateMedication = async (req, res) => {
-  const { id } = req.params;
-  const medication = await Medication.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!medication) {
-    throw new NotFoundError(`No medication found with id: ${id}`);
+const updateMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const medication = await Medication.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!medication) {
+      throw new NotFoundError(`No medication found with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({ success: true, data: medication });
+  } catch (error) {
+    next(error);
   }
-  res.status(StatusCodes.OK).json({ success: true, data: medication });
-  console.log("Changes a medication");
 };
 
-// Delete a medication
-const deleteMedication = async (req, res) => {
-  const { id } = req.params;
-  const medication = await Medication.findByIdAndDelete(id);
-  if (!medication) {
-    throw new NotFoundError(`No medication found with id: ${id}`);
+const deleteMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const medication = await Medication.findByIdAndDelete(id);
+    if (!medication) {
+      throw new NotFoundError(`No medication found with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Medication deleted successfully",
+    });
+  } catch (error) {
+    next(error);
   }
-  res
-    .status(StatusCodes.OK)
-    .json({ success: true, message: "Medication deleted successfully" });
-  console.log("Delete Medication");
 };
 
 module.exports = {
