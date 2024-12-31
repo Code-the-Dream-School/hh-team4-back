@@ -36,17 +36,8 @@ const medicationSchema = new mongoose.Schema(
       required: [true, "Please provide NDC Number"],
       unique: true,
     },
-    store: {
-      type: String,
-      ref: "User",
-      required: [true, "Please provide Store Name"],
-    },
-    loggedBy: {
-      type: String,
-      ref: "User",
-    },
     createdBy: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "Please provide the creator's user ID"],
     },
