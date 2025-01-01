@@ -52,7 +52,7 @@ const dispenseMedication = async (req, res) => {
     const populatedLog = await log.populate([
       {
         path: "medicationId",
-        select: "name ndc lot",
+        select: "name ndc lot class",
       },
       {
         path: "userId",
