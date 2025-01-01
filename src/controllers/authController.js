@@ -13,6 +13,7 @@ const signup = async (req, res) => {
         id: user._id,
         email: user.email,
         role: user.role,
+        store: user.store,
       },
     });
   } catch (error) {
@@ -49,7 +50,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, store: user.store },
       process.env.JWT_SECRET,
       { expiresIn: "24h" },
     );
@@ -62,6 +63,7 @@ const login = async (req, res) => {
         id: user._id,
         email: user.email,
         role: user.role,
+        store: user.store,
       },
     });
   } catch (error) {
