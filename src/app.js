@@ -2,7 +2,7 @@ const express = require("express");
 const connectDB = require("../config/db");
 const medicationRoutes = require("./routes/medicationRoutes.js");
 require("dotenv").config();
-
+const dispenseRoutes = require("./routes/dispenseRoutes.js");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
@@ -29,6 +29,7 @@ app.use("/api/v1", mainRouter);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", medicationRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1", dispenseRoutes);
 
 app.use(errorHandler);
 

@@ -1,6 +1,6 @@
 const Medication = require("../models/Medication");
 const User = require("../models/UserModel");
-const DispenseLog = require("../models/DispenseLog");
+
 const { StatusCodes } = require("http-status-codes");
 const { NotFoundError } = require("../errors");
 
@@ -47,69 +47,6 @@ const createMedication = async (req, res, next) => {
   }
 };
 
-const dispenseMedication = async (req, res, next) => {
-  try {
-    const { medicationId, quantity } = req.body;
-    const medication = await Medication.findById(medicationId).populate({
-      path: "createdBy",
-      select: "store",
-    });
-
-    if (!medication) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Medication not Found" });
-    }
-
-    if (medication.createdBy.store !== req.user.store) {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        success: false,
-        message:
-          "You are not authorized to dispense medication from this store.",
-      });
-    }
-
-    if (medication.quantity < quantity) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: "Insufficient stock available",
-      });
-    }
-
-    medication.quantity -= quantity;
-    await medication.save();
-
-    const log = await DispenseLog.create({
-      medicationId,
-      userId: req.user.id,
-      quantity,
-      dispenseDate: new Date(),
-    });
-
-    const populatedLog = await log.populate([
-      { path: "medicationId", select: "name ndc lot" },
-      { path: "userId", select: "name store" },
-    ]);
-
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Medication dispensed successfully",
-      log: populatedLog,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getDispenseLogs = async (req, res, next) => {
-  try {
-    const logs = await DispenseLog.find();
-    res.status(StatusCodes.OK).json({ success: true, data: logs });
-  } catch (error) {
-    next(error);
-  }
-};
-
 const updateMedication = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -148,6 +85,4 @@ module.exports = {
   createMedication,
   updateMedication,
   deleteMedication,
-  dispenseMedication,
-  getDispenseLogs,
 };
