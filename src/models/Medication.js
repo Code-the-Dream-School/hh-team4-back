@@ -41,6 +41,10 @@ const medicationSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Please provide the creator's user ID"],
     },
+    location: {
+      type: String,
+      required: [true, "Location value is required"],
+    },
     threshold: {
       type: Number,
       required: [true, "Please provide Threshold quantity"],
