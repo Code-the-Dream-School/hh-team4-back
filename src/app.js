@@ -33,7 +33,6 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/alerts", alertRoutes); // ALERTS route
 app.use("/api/v1", dispenseRoutes);
 
-
 app.use(errorHandler);
 
 module.exports = app;
