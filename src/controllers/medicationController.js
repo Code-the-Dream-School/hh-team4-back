@@ -39,6 +39,7 @@ const createMedication = async (req, res, next) => {
     const medicationData = {
       ...req.body,
       createdBy: user.id,
+      location: user.store, // Set Meds location value from the user's store
     };
     const medication = await Medication.create(medicationData);
     res.status(StatusCodes.CREATED).json({ success: true, data: medication });
@@ -50,6 +51,7 @@ const createMedication = async (req, res, next) => {
 const updateMedication = async (req, res, next) => {
   try {
     const { id } = req.params;
+
     const medication = await Medication.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
