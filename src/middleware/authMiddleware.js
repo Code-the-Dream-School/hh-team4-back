@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/UserModel"); // Adjust the path to your User model
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const authHeader = req.header("Authorization");
 
   // Check if the Authorization header is present
@@ -11,14 +12,23 @@ const authenticate = (req, res, next) => {
     });
   }
 
-  const token = authHeader.split(" ")[1]; // take token from header
+  const token = authHeader.split(" ")[1]; // Extract token from header
 
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach the user data (from token) to the request object
-    req.user = { id: decoded.id, role: decoded.role };
+    // Fetch the full user details, including `store`
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Attach the full user object to the request
+    req.user = { id: user.id, role: user.role, store: user.store };
     next();
   } catch (err) {
     return res.status(401).json({
