@@ -20,7 +20,7 @@ const dispenseMedication = async (req, res) => {
     }
 
     // Ensure User Store matches Medication Store
-    if (medication.createdBy.store !== req.user.store) {
+    if (medication.location !== req.user.store) {
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         message:
