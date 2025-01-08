@@ -1,0 +1,25 @@
+const express = require("express");
+const authenticate = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
+
+const { getDispenseLogs } = require("../controllers/dispenseController");
+
+const router = express.Router();
+
+// GET /reports/top-employee - Get top employee statistics
+router.get(
+  "/topEmployee",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  getDispenseLogs,
+);
+
+// GET /reports/out-of-stock - Get medications with 0 quantity
+router.get(
+  "/outOfStock",
+  authenticate,
+  roleMiddleware(["admin", "clerk", "inventoryManager"]),
+  getDispenseLogs,
+);
+
+module.exports = router;

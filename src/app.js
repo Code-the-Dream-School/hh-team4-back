@@ -10,7 +10,7 @@ const app = express();
 const cors = require("cors");
 const favicon = require("express-favicon");
 const logger = require("morgan");
-
+const reportRoutes = require("./routes/reportRoutes");
 const mainRouter = require("./routes/mainRouter.js");
 const errorHandler = require("./middleware/errorHandler.js");
 
@@ -32,7 +32,7 @@ app.use("/api/v1/inventory", medicationRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/alerts", alertRoutes); // ALERTS route
 app.use("/api/v1", dispenseRoutes);
-
+app.use("/api/v1", reportRoutes);
 app.use(errorHandler);
 
 module.exports = app;
