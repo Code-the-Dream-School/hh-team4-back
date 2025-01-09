@@ -36,7 +36,7 @@ const topEmployee = async (req, res) => {
           user,
           dispenseCount: log.dispenseCount,
         };
-      })
+      }),
     );
 
     res.status(StatusCodes.OK).json({
@@ -51,46 +51,46 @@ const topEmployee = async (req, res) => {
   }
 };
 const outOfStock = async (req, res) => {
-    console.log("outOfStock controller running");
-    try {
-      // Get the current date and calculate the date 30 days ago
-      const today = new Date();
-      const thirtyDaysAgo = new Date(today);
-      thirtyDaysAgo.setDate(today.getDate() - 30);
-  
-      // Find all dispense logs in the last 30 days
-      const logs = await DispenseLog.find({
-        dispenseDate: { $gte: thirtyDaysAgo, $lte: today },
-      }).populate({
-        path: "medicationId",
-        select: "name quantity location", // Select medication fields
-      });
-  
-      // Filter logs for medications with quantity 0 and track unique medicationId
-      const uniqueMedications = {};
-      const outOfStockMedications = [];
-  
-      logs.forEach((log) => {
-        if (log.medicationId && log.medicationId.quantity === 0) {
-          const medicationId = log.medicationId._id.toString();
-          if (!uniqueMedications[medicationId]) {
-            uniqueMedications[medicationId] = true;
-            outOfStockMedications.push(log.medicationId);
-          }
+  console.log("outOfStock controller running");
+  try {
+    // Get the current date and calculate the date 30 days ago
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    // Find all dispense logs in the last 30 days
+    const logs = await DispenseLog.find({
+      dispenseDate: { $gte: thirtyDaysAgo, $lte: today },
+    }).populate({
+      path: "medicationId",
+      select: "name quantity location", // Select medication fields
+    });
+
+    // Filter logs for medications with quantity 0 and track unique medicationId
+    const uniqueMedications = {};
+    const outOfStockMedications = [];
+
+    logs.forEach((log) => {
+      if (log.medicationId && log.medicationId.quantity === 0) {
+        const medicationId = log.medicationId._id.toString();
+        if (!uniqueMedications[medicationId]) {
+          uniqueMedications[medicationId] = true;
+          outOfStockMedications.push(log.medicationId);
         }
-      });
-  
-      res.status(StatusCodes.OK).json({
-        success: true,
-        medications: outOfStockMedications,
-      });
-    } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: "Error fetching out-of-stock medications",
-      });
-    }
-  };
+      }
+    });
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      medications: outOfStockMedications,
+    });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Error fetching out-of-stock medications",
+    });
+  }
+};
 
 module.exports = {
   topEmployee,
