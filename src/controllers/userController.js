@@ -71,7 +71,6 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-
 // Delete a user by ID
 const deleteUser = async (req, res, next) => {
   try {
