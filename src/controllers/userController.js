@@ -49,6 +49,7 @@ const getAllUsers = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const updates = { ...req.body };
+    delete updates.password; // Ensures password isn’t part of the update if not provided
 
     //if password is being updated , hash it
     if (updates.password) {
@@ -59,6 +60,7 @@ const updateUser = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,
+      select: "-password", // Excludes password from the returned user object
     });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -68,6 +70,7 @@ const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+
 
 // Delete a user by ID
 const deleteUser = async (req, res, next) => {
